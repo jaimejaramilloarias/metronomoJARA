@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Metronomo J.A.R.A: herramienta web para estudiar pulso, subdivisiones, swing, clave, polirritmia y polimetria.">
     <base href="/metronomoJARA/">
     <title>Metrónomo J.A.R.A</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <style>
         :root {
             --bg: #000000; /* Fondo negro puro por si la pantalla es más ancha que la foto */
@@ -150,12 +152,295 @@
         .visually-disabled { opacity: 0.4; pointer-events: none; }
         .adv-label { font-size: 0.7rem; color: var(--accent); font-weight: bold; margin-top: 5px; border-bottom: 1px solid rgba(59,130,246,0.3); padding-bottom: 3px; text-shadow: 0 1px 2px rgba(0,0,0,0.8);}
         .pitch-label { font-size: 0.65rem; color: #aaa; margin-left: -5px;}
+
+        :root {
+            --bg: #161514;
+            --panel: rgba(255, 250, 240, 0.09);
+            --panel-light: rgba(255, 250, 240, 0.13);
+            --text: #fffaf0;
+            --text-dim: rgba(255, 250, 240, 0.7);
+            --accent: #d4a84f;
+            --accent-hover: #e5bd67;
+            --danger: #b66543;
+            --beat-1: var(--accent);
+            --beat-other: rgba(255, 250, 240, 0.68);
+            --beat-sub: rgba(255, 250, 240, 0.28);
+            --line: rgba(255, 255, 255, 0.14);
+            --ink: #161514;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        body {
+            background:
+                linear-gradient(120deg, rgba(22, 21, 20, 0.94), rgba(22, 21, 20, 0.74)),
+                url('fondo_metronomo.jpg') center / cover fixed no-repeat;
+            color: var(--text);
+            display: block;
+            min-height: 100vh;
+            padding: 0;
+        }
+
+        body::before {
+            background: radial-gradient(circle at 74% 18%, rgba(212, 168, 79, 0.22), transparent 34%);
+            content: "";
+            inset: 0;
+            pointer-events: none;
+            position: fixed;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .topbar {
+            align-items: center;
+            background: rgba(22, 21, 20, 0.82);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            display: flex;
+            justify-content: space-between;
+            min-height: 76px;
+            padding: 16px clamp(18px, 4vw, 56px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand {
+            align-items: center;
+            display: flex;
+            gap: 12px;
+            font-weight: 900;
+        }
+
+        .brand-mark {
+            align-items: center;
+            background: var(--accent);
+            border-radius: 50%;
+            color: var(--ink);
+            display: inline-flex;
+            font-size: 0.82rem;
+            height: 38px;
+            justify-content: center;
+            width: 38px;
+        }
+
+        .lab-link {
+            border: 1px solid rgba(255, 255, 255, 0.38);
+            border-radius: 999px;
+            color: rgba(255, 255, 255, 0.86);
+            font-size: 0.9rem;
+            font-weight: 900;
+            padding: 10px 16px;
+        }
+
+        .app-shell {
+            margin: 0 auto;
+            max-width: 1180px;
+            padding: clamp(28px, 5vw, 62px) clamp(18px, 4vw, 56px) 64px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-hero {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 24px;
+            max-width: 860px;
+        }
+
+        .eyebrow {
+            color: #9ab8aa;
+            font-size: 0.78rem;
+            font-weight: 1000;
+            letter-spacing: 0.16em;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .tool-hero h1,
+        .header h1 {
+            color: var(--text);
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: clamp(3rem, 7vw, 6.5rem);
+            letter-spacing: 0;
+            line-height: 0.88;
+            margin: 0;
+            text-shadow: none;
+            text-transform: none;
+        }
+
+        .tool-hero p {
+            color: var(--text-dim);
+            font-size: 1.08rem;
+            line-height: 1.7;
+            margin: 0;
+            max-width: 760px;
+        }
+
+        .metronome-container {
+            background: rgba(255, 250, 240, 0.09);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            box-shadow: 0 22px 60px rgba(0, 0, 0, 0.3);
+            max-width: none;
+            padding: clamp(18px, 3vw, 30px);
+        }
+
+        .header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            text-align: left;
+        }
+
+        .header h1 {
+            font-size: clamp(2.2rem, 4vw, 4rem);
+        }
+
+        .stage,
+        .control-group {
+            background: rgba(22, 21, 20, 0.58);
+            border: 1px solid rgba(255, 255, 255, 0.13);
+            border-radius: 8px;
+        }
+
+        .bpm-display {
+            color: var(--accent);
+            font-family: Georgia, "Times New Roman", serif;
+            text-shadow: 0 0 30px rgba(212, 168, 79, 0.28);
+        }
+
+        .quick-bpm-row {
+            gap: 6px;
+        }
+
+        .quick-bpm-btn,
+        .btn-circle,
+        .btn-tap {
+            background: rgba(255, 250, 240, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 999px;
+            color: var(--text);
+        }
+
+        .quick-bpm-btn:hover,
+        .btn-circle:hover,
+        .btn-tap:hover {
+            background: var(--accent);
+            color: var(--ink);
+        }
+
+        .controls-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .group-header {
+            background: rgba(255, 250, 240, 0.07);
+            color: rgba(255, 250, 240, 0.78);
+            letter-spacing: 0.04em;
+        }
+
+        .group-header:hover {
+            background: rgba(212, 168, 79, 0.18);
+            color: var(--accent);
+        }
+
+        .group-advanced {
+            background: rgba(22, 21, 20, 0.32);
+        }
+
+        select,
+        input[type=number],
+        input[type=text] {
+            background: rgba(22, 21, 20, 0.72) !important;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 8px;
+            min-height: 40px;
+        }
+
+        select:focus,
+        input[type=number]:focus,
+        input[type=text]:focus {
+            border-color: var(--accent);
+        }
+
+        input[type=range],
+        .toggle-switch input {
+            accent-color: var(--accent);
+        }
+
+        .adv-label,
+        #timer-display {
+            color: var(--accent) !important;
+        }
+
+        .action-row {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: minmax(0, 2fr) minmax(160px, 1fr);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            border: none;
+            border-radius: 999px;
+            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.22);
+            color: var(--ink);
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            box-shadow: 0 0 25px rgba(212, 168, 79, 0.36);
+        }
+
+        .dot.active-beat {
+            background: var(--text);
+        }
+
+        @media (max-width: 820px) {
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .controls-grid,
+            .action-row {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-bpm-row {
+                overflow-x: auto;
+                padding-bottom: 8px;
+            }
+
+            .quick-bpm-btn {
+                flex: 0 0 54px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="metronome-container">
-    <div class="header"><h1>Metrónomo J.A.R.A</h1></div>
+<header class="topbar">
+    <a class="brand" href="https://jaramillomusiclab.com/">
+        <span class="brand-mark">JML</span>
+        <span>Jaramillo Music Lab</span>
+    </a>
+    <a class="lab-link" href="https://jaramillomusiclab.com/lab.html">Volver al Lab</a>
+</header>
+
+<main class="app-shell">
+<section class="tool-hero">
+    <p class="eyebrow">Aplicación musical</p>
+    <h1>Metrónomo J.A.R.A</h1>
+    <p>Una herramienta para estudiar pulso, subdivisiones, swing, claves, polirritmias, polimetrías y rutinas de práctica con control fino.</p>
+</section>
+
+<section class="metronome-container" aria-label="Controles del metronomo">
+    <div class="header"><h1>Panel de práctica</h1></div>
 
     <div class="stage hidden" id="stageArea">
         <div class="bulb bulb-swing" id="light-swing"></div>
@@ -281,11 +566,12 @@
 
     </div>
 
-    <div style="display: flex; gap: 15px;">
+    <div class="action-row">
         <button class="btn-primary" id="play-btn">INICIAR</button>
         <button class="btn-tap" id="tap-btn">TAP</button>
     </div>
-</div>
+</section>
+</main>
 
 <script>
     // --- Lógica de Acordeón ---
